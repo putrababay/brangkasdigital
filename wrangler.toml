@@ -1,3 +1,9 @@
-name = "my-worker"
-main = "index.html"
-compatibility_date = "2025-01-01"
+#:schema https://mod.it/wrangler-schema
+name = "ultimate-secure-vault"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "." # Mengarahkan ke root tempat index.html berada
+
+[[d1_databases]]
+binding = "DB" # Nama variabel yang digunakan di kode _worker.js
+database_name = "brangkasdigital"
+database_id = "bff4bc7c-631e-44f4-ae5f-64945174dcfc"
