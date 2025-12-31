@@ -55,6 +55,20 @@ export default {
                 return new Response(JSON.stringify({ success: true }), { status: 200 });
             }
 
+            // ... (di dalam blok try pada _worker.js sebelumnya)
+
+            // Endpoint: POST /api/verify-pin
+            if (url.pathname === "/api/verify-pin" && request.method === "POST") {
+                const { pin } = await request.json();
+                const stored = await env.DB.prepare("SELECT value FROM settings WHERE key = 'login_pin'").first();
+                if (stored.value === pin) {
+                    return new Response(JSON.stringify({ success: true }), { status: 200 });
+                }
+                return new Response(JSON.stringify({ success: false }), { status: 401 });
+            }
+
+            // ... (lanjutkan ke endpoint /api/accounts seperti sebelumnya)
+
             // 4. Sajikan File Statis (index.html, dll)
             // Ini akan mengambil file dari direktori build Pages Anda
             return env.ASSETS.fetch(request);
