@@ -22,7 +22,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
     <style>
-      /* Base Theme */
       body {
         background-color: #121212;
         color: #e0e0e0;
@@ -36,19 +35,10 @@
         border: 1px solid #333;
         max-width: 100%;
       }
-
-      .form-control,
-      .form-select {
+      .form-control {
         background-color: #2d2d2d !important;
         border: 1px solid #444 !important;
         color: #ffffff !important;
-        font-size: 0.9rem;
-      }
-      .form-control:focus {
-        background-color: #333 !important;
-        border-color: #0d6efd;
-        box-shadow: none;
-        color: white;
       }
       .input-group-text {
         background-color: #333;
@@ -57,25 +47,27 @@
         cursor: pointer;
       }
 
-      .modal-content {
-        background-color: #1e1e1e;
-        color: white;
-        border: 1px solid #444;
-      }
-      .table-dark {
-        --bs-table-bg: #1e1e1e;
-        font-size: 0.85rem;
-      }
-      .swal2-container {
-        z-index: 10000 !important;
+      /* Input Minimalis Secret Key */
+      .swal-mini-input {
+        width: 100% !important;
+        background: #2d2d2d !important;
+        color: white !important;
+        border: 1px solid #444 !important;
+        padding: 10px !important;
       }
 
-      /* Custom Mini Input for Secret Key */
-      .swal-mini-input {
-        width: 80% !important;
-        margin: 10px auto !important;
-        text-align: center;
-        border-radius: 8px !important;
+      /* Responsif Tabel */
+      @media (max-width: 576px) {
+        .desktop-action {
+          display: none !important;
+        }
+        .dataTables_filter {
+          width: 100%;
+        }
+        .dataTables_filter input {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
       }
 
       #loginOverlay {
@@ -101,37 +93,15 @@
         font-size: 24px;
         font-weight: bold;
         background: #252525 !important;
-        border: none !important;
         border-bottom: 2px solid #0d6efd !important;
-        border-radius: 0;
         color: #0dcaf0 !important;
-      }
-
-      /* Responsive Utility */
-      @media (max-width: 576px) {
-        h3 {
-          font-size: 1.1rem;
-        }
-        .container {
-          padding: 10px;
-        }
-        /* Sembunyikan kolom aksi di mobile agar clean sesuai permintaan */
-        #accountTable .action-col {
-          display: none;
-        }
-        .dataTables_length,
-        .dataTables_info {
-          display: none !important;
-        }
       }
     </style>
   </head>
   <body>
     <div id="loginOverlay">
       <div class="login-card shadow-lg">
-        <div class="mb-3">
-          <i class="fas fa-fingerprint fa-3x text-primary"></i>
-        </div>
+        <i class="fas fa-fingerprint fa-3x text-primary mb-3"></i>
         <h5 class="mb-4">Secure Vault</h5>
         <input
           type="password"
@@ -139,10 +109,8 @@
           class="form-control text-center pin-input-modern mb-4"
           maxlength="6"
           placeholder="******" />
-        <button
-          class="btn btn-primary w-100 rounded-pill py-2"
-          onclick="checkPin()">
-          VERIFIKASI ACCESS
+        <button class="btn btn-primary w-100 rounded-pill" onclick="checkPin()">
+          VERIFIKASI
         </button>
       </div>
     </div>
@@ -150,25 +118,28 @@
     <div id="mainApp" style="display: none">
       <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="m-0">
-            <i class="fas fa-vault text-warning"></i> Brankas Cloud
-          </h3>
-          <div class="d-flex gap-1">
+          <h3 class="m-0"><i class="fas fa-vault text-warning"></i> Brankas</h3>
+          <div class="d-flex gap-2">
             <div class="dropdown">
               <button
                 class="btn btn-outline-light btn-sm"
-                type="button"
                 data-bs-toggle="dropdown">
-                <i class="fas fa-shield-alt"></i>
+                <i class="fas fa-cog"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                 <li>
-                  <a class="dropdown-item" href="#" onclick="updateLoginPin()"
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    onclick="updateSecurity('pin')"
                     >Update PIN Login</a
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#" onclick="updateSecretKey()"
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    onclick="updateSecurity('secret')"
                     >Update Secret Key</a
                   >
                 </li>
@@ -182,12 +153,12 @@
 
         <table
           id="accountTable"
-          class="table table-dark table-hover dt-responsive nowrap w-100">
+          class="table table-dark table-hover nowrap w-100">
           <thead>
             <tr>
               <th>Kategori</th>
               <th>Username</th>
-              <th class="text-end action-col">Aksi</th>
+              <th class="text-end desktop-action">Aksi</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -203,7 +174,7 @@
       data-bs-backdrop="static">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header border-secondary">
+          <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">Form Data</h5>
             <button
               type="button"
@@ -214,24 +185,24 @@
             <form id="accountForm">
               <input type="hidden" id="editId" />
               <div class="mb-3">
-                <label class="form-label small">Kategori / Nama Aplikasi</label>
-                <input
+                <label class="small">Kategori</label
+                ><input
                   type="text"
                   id="kategori"
                   class="form-control"
-                  placeholder="Contoh: Facebook"
                   required />
               </div>
               <div class="mb-3">
-                <label class="form-label small">Username / Email</label>
-                <input
+                <label class="small">Username</label
+                ><input
                   type="text"
                   id="username"
                   class="form-control"
                   required />
               </div>
+
               <div class="mb-3">
-                <label class="form-label small">Password</label>
+                <label class="small">Password</label>
                 <div class="input-group">
                   <input
                     type="password"
@@ -245,9 +216,10 @@
                   ></span>
                 </div>
               </div>
+
               <div class="row">
                 <div class="col-6 mb-3">
-                  <label class="form-label small">PIN</label>
+                  <label class="small">PIN</label>
                   <div class="input-group">
                     <input type="password" id="pin" class="form-control" />
                     <span class="input-group-text" onclick="toggleView('pin')"
@@ -256,7 +228,7 @@
                   </div>
                 </div>
                 <div class="col-6 mb-3">
-                  <label class="form-label small">Pola</label>
+                  <label class="small">Pola</label>
                   <div class="input-group">
                     <input type="password" id="pola" class="form-control" />
                     <span class="input-group-text" onclick="toggleView('pola')"
@@ -265,11 +237,15 @@
                   </div>
                 </div>
               </div>
-              <div class="mb-4">
-                <label class="form-label small">Catatan Tambahan</label>
-                <textarea id="riwayat" class="form-control" rows="2"></textarea>
+
+              <div class="mb-3">
+                <label class="small">Catatan</label
+                ><textarea
+                  id="riwayat"
+                  class="form-control"
+                  rows="2"></textarea>
               </div>
-              <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+              <button type="submit" class="btn btn-success w-100 fw-bold">
                 ENKRIPSI & SIMPAN
               </button>
             </form>
@@ -282,22 +258,78 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
     <script>
-      $(document).ready(function () {
-        if (sessionStorage.getItem("vault_auth") === "true") {
-          showApp();
-        }
-      });
+      // FIX: Menghilangkan paksa fokus Bootstrap Modal agar SweetAlert2 bisa menerima input
+      $.fn.modal.Constructor.prototype._enforceFocus = function () {};
+
+      async function askSecret() {
+        // Matikan event keyboard modal sementara agar tidak bentrok
+        const modalEl = document.getElementById("myModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+        const { value: key } = await Swal.fire({
+          title: "Otorisasi",
+          html: `<input id="x-secret" class="form-control swal-mini-input" type="password" placeholder="Secret Key" autocomplete="off">`,
+          focusConfirm: false,
+          showCancelButton: true,
+          didOpen: () => {
+            // Paksa fokus ke input setelah SweetAlert muncul
+            const input = Swal.getPopup().querySelector("#x-secret");
+            input.focus();
+          },
+          preConfirm: () => {
+            const val = document.getElementById("x-secret").value;
+            if (!val) {
+              Swal.showValidationMessage("Wajib diisi");
+            }
+            return val;
+          },
+        });
+        return key;
+      }
 
       function toggleView(id) {
         const input = document.getElementById(id);
-        input.type = input.type === "password" ? "text" : "password";
+        const icon = event.currentTarget.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
       }
 
+      async function renderTable() {
+        const response = await fetch("/api/accounts");
+        const data = await response.json();
+        if ($.fn.DataTable.isDataTable("#accountTable"))
+          $("#accountTable").DataTable().destroy();
+
+        let html = "";
+        data.forEach((item) => {
+          html += `<tr>
+                <td onclick="handleAction(${item.id}, 'view')" style="cursor:pointer"><b>${item.kategori}</b></td>
+                <td>${item.username}</td>
+                <td class="text-end desktop-action">
+                    <button class="btn btn-sm btn-warning" onclick="handleAction(${item.id}, 'edit')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="handleAction(${item.id}, 'delete')"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        $("#tableBody").html(html);
+
+        $("#accountTable").DataTable({
+          responsive: true,
+          dom: "ftp",
+          language: { search: "", searchPlaceholder: "Cari..." },
+        });
+      }
+
+      // Sisanya adalah fungsi core (Login, Save, Update) yang sudah disesuaikan
       async function checkPin() {
         const pin = $("#pinInput").val();
         const hash = CryptoJS.SHA256(pin).toString();
@@ -319,59 +351,9 @@
         renderTable();
       }
 
-      // Input Secret Key Minimalis sesuai instruksi
-      async function askSecret() {
-        const { value: key } = await Swal.fire({
-          title: "Otorisasi",
-          html: `<input id="swal2-input" autocapitalize="off" class="swal2-input form-control swal-mini-input" type="password" placeholder="Secret Key">`,
-          showCancelButton: true,
-          focusConfirm: false,
-          preConfirm: () => {
-            const val = Swal.getPopup().querySelector("#swal2-input").value;
-            if (!val) Swal.showValidationMessage("Masukkan Secret Key");
-            return val;
-          },
-        });
-        return key;
-      }
-
-      async function renderTable() {
-        const response = await fetch("/api/accounts");
-        const data = await response.json();
-        if ($.fn.DataTable.isDataTable("#accountTable"))
-          $("#accountTable").DataTable().destroy();
-
-        let html = "";
-        data.forEach((item) => {
-          html += `<tr>
-                <td><b>${item.kategori}</b></td>
-                <td>${item.username}</td>
-                <td class="text-end action-col">
-                    <button class="btn btn-sm btn-info" onclick="handleAction(${item.id}, 'view')"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-warning" onclick="handleAction(${item.id}, 'edit')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="handleAction(${item.id}, 'delete')"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>`;
-        });
-        $("#tableBody").html(html);
-
-        // Konfigurasi Tabel Mobile Friendly (Hanya cari dan paging)
-        $("#accountTable").DataTable({
-          responsive: true,
-          pageLength: 10,
-          lengthChange: false,
-          language: {
-            search: "_INPUT_",
-            searchPlaceholder: "Cari...",
-            paginate: { previous: "‹", next: "›" },
-          },
-        });
-      }
-
       async function handleAction(id, type) {
         const key = await askSecret();
         if (!key) return;
-
         const response = await fetch("/api/accounts");
         const db = await response.json();
         const item = db.find((x) => x.id === id);
@@ -382,27 +364,27 @@
               CryptoJS.enc.Utf8
             );
             if (!pass) throw new Error();
-
             const pin = item.pin
               ? CryptoJS.AES.decrypt(item.pin, key).toString(CryptoJS.enc.Utf8)
-              : "-";
+              : "";
             const pola = item.pola
               ? CryptoJS.AES.decrypt(item.pola, key).toString(CryptoJS.enc.Utf8)
-              : "-";
+              : "";
 
             if (type === "view") {
               Swal.fire({
                 title: item.kategori,
-                html: `<div class="text-start bg-light p-3 rounded text-dark small">
-                            <b>Pass:</b> ${pass}<br><b>PIN:</b> ${pin}<br><b>Pola:</b> ${pola}<hr>${item.riwayat}</div>`,
+                html: `<div class="text-start bg-light p-3 rounded text-dark small"><b>Pass:</b> ${pass}<br><b>PIN:</b> ${
+                  pin || "-"
+                }<br><b>Pola:</b> ${pola || "-"}<hr>${item.riwayat}</div>`,
               });
             } else {
               $("#editId").val(item.id);
               $("#kategori").val(item.kategori);
               $("#username").val(item.username);
               $("#password").val(pass);
-              $("#pin").val(pin === "-" ? "" : pin);
-              $("#pola").val(pola === "-" ? "" : pola);
+              $("#pin").val(pin);
+              $("#pola").val(pola);
               $("#riwayat").val(item.riwayat);
               $("#modalTitle").text("Edit Akun");
               $("#myModal").modal("show");
@@ -426,7 +408,6 @@
         e.preventDefault();
         const key = await askSecret();
         if (!key) return;
-
         const data = {
           id: $("#editId").val(),
           kategori: $("#kategori").val(),
@@ -440,7 +421,6 @@
             : "",
           riwayat: $("#riwayat").val(),
         };
-
         const res = await fetch("/api/accounts", {
           method: "POST",
           body: JSON.stringify(data),
@@ -448,43 +428,39 @@
         if (res.ok) {
           $("#myModal").modal("hide");
           renderTable();
-          Swal.fire("Sukses", "Data Terenkripsi", "success");
+          Swal.fire("Sukses", "Data Tersimpan", "success");
         }
       });
 
-      // Update PIN Login
-      async function updateLoginPin() {
-        const { value: formValues } = await Swal.fire({
-          title: "Update PIN Login",
-          html:
-            '<input id="p-old" class="swal2-input swal-mini-input" type="password" placeholder="PIN Lama">' +
-            '<input id="p-new" class="swal2-input swal-mini-input" type="password" placeholder="PIN Baru">',
-          preConfirm: () => [
-            document.getElementById("p-old").value,
-            document.getElementById("p-new").value,
-          ],
-        });
-
-        if (formValues) {
-          const res = await fetch("/api/update-pin", {
-            method: "POST",
-            body: JSON.stringify({
-              old: CryptoJS.SHA256(formValues[0]).toString(),
-              new: CryptoJS.SHA256(formValues[1]).toString(),
-            }),
+      async function updateSecurity(type) {
+        if (type === "pin") {
+          const { value: pins } = await Swal.fire({
+            title: "Update PIN Login",
+            html: '<input id="oldP" class="swal2-input" type="password" placeholder="PIN Lama"><input id="newP" class="swal2-input" type="password" placeholder="PIN Baru">',
+            preConfirm: () => [
+              document.getElementById("oldP").value,
+              document.getElementById("newP").value,
+            ],
           });
-          if (res.ok) Swal.fire("Sukses", "PIN Updated", "success");
-          else Swal.fire("Gagal", "PIN Lama Salah", "error");
+          if (pins) {
+            const res = await fetch("/api/update-pin", {
+              method: "POST",
+              body: JSON.stringify({
+                old: CryptoJS.SHA256(pins[0]).toString(),
+                new: CryptoJS.SHA256(pins[1]).toString(),
+              }),
+            });
+            res.ok
+              ? Swal.fire("Sukses", "PIN Updated", "success")
+              : Swal.fire("Error", "PIN Lama Salah", "error");
+          }
+        } else {
+          Swal.fire(
+            "Info",
+            "Masukkan Secret Key baru saat proses simpan untuk mengubah enkripsi.",
+            "info"
+          );
         }
-      }
-
-      // Update Secret Key (Client Side Re-encryption placeholder)
-      async function updateSecretKey() {
-        Swal.fire(
-          "Info",
-          "Gunakan Secret Key baru saat menyimpan data berikutnya untuk merubah enkripsi.",
-          "info"
-        );
       }
 
       function openModalAdd() {
